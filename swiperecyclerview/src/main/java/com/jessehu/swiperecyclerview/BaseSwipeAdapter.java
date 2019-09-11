@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -87,26 +86,38 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             int bgColor = menuItem.getBgColor();
             int iconSize = menuItem.getIconSize();
             int iconGravity = menuItem.getIconGravity();
+            Drawable bgDrawable = menuItem.getBgDrawable();
+            int textSize = menuItem.getTextSize();
 
-            TextView titleTv = new TextView(mContext);
+            MenuView titleTv = new MenuView(mContext);
             titleTv.setTag(i);
             titleTv.setText(title);
             titleTv.setGravity(Gravity.CENTER);
-            titleTv.setBackgroundColor(bgColor);
+            if (bgDrawable != null) {
+                titleTv.setBackground(bgDrawable);
+            } else {
+                titleTv.setBackgroundColor(bgColor);
+            }
+            if (textSize != 0) {
+                titleTv.setTextSize(textSize);
+            }
             titleTv.setTextColor(textColor);
             if (icon != null) {
                 if (iconSize <= 0) {
-                    iconSize = 100;
+                    iconSize = mMenuWidth / 2;
                 }
                 icon.setBounds(0, 0, iconSize, iconSize);
+
                 switch (iconGravity) {
                     case Gravity.START:
+                    case Gravity.LEFT:
                         titleTv.setCompoundDrawables(icon, null, null, null);
                         break;
                     case Gravity.TOP:
                         titleTv.setCompoundDrawables(null, icon, null, null);
                         break;
                     case Gravity.END:
+                    case Gravity.RIGHT:
                         titleTv.setCompoundDrawables(null, null, icon, null);
                         break;
                     case Gravity.BOTTOM:
@@ -118,19 +129,8 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(mMenuWidth, ViewGroup.LayoutParams.MATCH_PARENT);
             titleTv.setLayoutParams(params);
-            titleTv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // 菜单点击事件
-                    if (mMenuListener != null) {
-                        mMenuListener.onClick(view, (Integer) view.getTag());
-                    }
-                }
-            });
             menuContainer.addView(titleTv);
         }
-
-
         return new SwipeHolder(itemView);
     }
 
@@ -165,6 +165,19 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
         public SwipeHolder(@NonNull View itemView) {
             super(itemView);
             mViews = new SparseArray<>();
+            LinearLayout menuContainer = itemView.findViewById(R.id.ll_menu_layout);
+            for (int i = 0; i < menuContainer.getChildCount(); i++) {
+                View menuView = menuContainer.getChildAt(i);
+                menuView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // 菜单点击事件
+                        if (mMenuListener != null) {
+                            mMenuListener.onClick(view, getLayoutPosition(), (Integer) view.getTag());
+                        }
+                    }
+                });
+            }
         }
 
         public View getView(int id) {
@@ -181,16 +194,19 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
         /**
          * 菜单点击回调
          *
-         * @param view     菜单对应的view
-         * @param position 菜单位置
+         * @param view         菜单对应的view
+         * @param itemPosition ItemView在RecyclerView中的位置
+         * @param menuPosition 菜单位置
          */
-        void onClick(View view, int position);
+        void onClick(View view, int itemPosition, int menuPosition);
     }
 
     public static class MenuItem {
         private String title;
-        private int bgColor = Color.WHITE;
         private int textColor = Color.BLACK;
+        private int textSize;
+        private int bgColor = Color.WHITE;
+        private Drawable bgDrawable;
         private Drawable icon;
         private int iconSize;
         private int iconGravity = Gravity.START;
@@ -198,10 +214,12 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
         public MenuItem() {
         }
 
-        public MenuItem(String title, int bgColor, int textColor, Drawable icon, int iconSize, int iconGravity) {
+        public MenuItem(String title, int textColor, int textSize, int bgColor, Drawable bgDrawable, Drawable icon, int iconSize, int iconGravity) {
             this.title = title;
-            this.bgColor = bgColor;
             this.textColor = textColor;
+            this.textSize = textSize;
+            this.bgColor = bgColor;
+            this.bgDrawable = bgDrawable;
             this.icon = icon;
             this.iconSize = iconSize;
             this.iconGravity = iconGravity;
@@ -215,6 +233,22 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             this.title = title;
         }
 
+        public int getTextColor() {
+            return textColor;
+        }
+
+        public void setTextColor(int textColor) {
+            this.textColor = textColor;
+        }
+
+        public int getTextSize() {
+            return textSize;
+        }
+
+        public void setTextSize(int textSize) {
+            this.textSize = textSize;
+        }
+
         public int getBgColor() {
             return bgColor;
         }
@@ -223,12 +257,12 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             this.bgColor = bgColor;
         }
 
-        public int getTextColor() {
-            return textColor;
+        public Drawable getBgDrawable() {
+            return bgDrawable;
         }
 
-        public void setTextColor(int textColor) {
-            this.textColor = textColor;
+        public void setBgDrawable(Drawable bgDrawable) {
+            this.bgDrawable = bgDrawable;
         }
 
         public Drawable getIcon() {
@@ -253,6 +287,11 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
 
         public void setIconGravity(int iconGravity) {
             this.iconGravity = iconGravity;
+        }
+
+        private int dip2px(Context context, float dpValue) {
+            final float scale = context.getResources().getDisplayMetrics().density;
+            return (int) (dpValue * scale + 0.5f);
         }
     }
 }

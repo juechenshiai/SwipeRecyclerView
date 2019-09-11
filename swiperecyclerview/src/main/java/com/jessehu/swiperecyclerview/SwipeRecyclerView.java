@@ -268,9 +268,12 @@ public class SwipeRecyclerView extends RecyclerView {
 
         final int count = getChildCount();
         for (int i = count - 1; i >= 0; i--) {
+            // 遍历获取所有的子View并获取其对应的Rect
             final View child = getChildAt(i);
             if (child.getVisibility() == View.VISIBLE) {
+                // 获取view的Rect
                 child.getHitRect(frame);
+                // 判断点击的点是否在该view的范围内
                 if (frame.contains(x, y)) {
                     return firstPosition + i;
                 }

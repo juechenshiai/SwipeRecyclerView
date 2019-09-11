@@ -3,6 +3,7 @@ package com.jessehu.swiperecyclerviewdemo;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -23,11 +24,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = this;
-        List<String> contents = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        final List<String> contents = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
             contents.add("这是内容" + (i + 1));
         }
-        final List<String> titles = Arrays.asList("删除", "哈哈");
+        final List<String> titles = Arrays.asList("删除", "点击");
         List<BaseSwipeAdapter.MenuItem> menus = new ArrayList<>();
         for (int i = 0; i < titles.size(); i++) {
             String title = titles.get(i);
@@ -35,20 +36,26 @@ public class MainActivity extends AppCompatActivity {
             menuItem.setTitle(title);
             if (i == 0) {
                 menuItem.setBgColor(Color.YELLOW);
+                menuItem.setTextColor(Color.BLUE);
             } else {
                 menuItem.setBgColor(Color.BLUE);
+                menuItem.setTextColor(Color.YELLOW);
             }
+            menuItem.setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
+            menuItem.setIconGravity(Gravity.END);
+            menuItem.setIconSize(50);
+            menuItem.setTextSize(10);
             menus.add(menuItem);
         }
         SwipeAdapter swipeAdapter = new SwipeAdapter(mContext, R.layout.item_view, contents);
         swipeAdapter.setMenus(menus);
-        swipeAdapter.setMenuWidth(100);
+        swipeAdapter.setMenuWidth(200);
         SwipeRecyclerView listView = findViewById(R.id.srv_list);
         listView.setAdapter(swipeAdapter);
         swipeAdapter.setOnMenuItemClickListener(new BaseSwipeAdapter.OnMenuItemClickListener() {
             @Override
-            public void onClick(View view, int position) {
-                Toast.makeText(mContext, titles.get(position), Toast.LENGTH_SHORT).show();
+            public void onClick(View view, int itemPosition, int menuPosition) {
+                Toast.makeText(mContext, titles.get(menuPosition) + contents.get(itemPosition), Toast.LENGTH_SHORT).show();
             }
         });
     }
