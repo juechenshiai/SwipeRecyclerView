@@ -30,7 +30,8 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
     private int mLayoutId;
     private int mMenuWidth;
     private List<T> mContentData;
-    private OnMenuItemClickListener mMenuListener;
+    private OnMenuItemClickListener mMenuItemClickListener;
+    private OnItemClickListener mItemClickListener;
 
     public BaseSwipeAdapter(Context mContext, int mLayoutId, List<T> contentData) {
         this.mContext = mContext;
@@ -155,8 +156,12 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
         return mContentData.size();
     }
 
-    public void setOnMenuItemClickListener(OnMenuItemClickListener mMenuListener) {
-        this.mMenuListener = mMenuListener;
+    public void setOnMenuItemClickListener(OnMenuItemClickListener mMenuItemClickListener) {
+        this.mMenuItemClickListener = mMenuItemClickListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener mItemClickListener) {
+        this.mItemClickListener = mItemClickListener;
     }
 
     public class SwipeHolder extends RecyclerView.ViewHolder {
@@ -172,12 +177,21 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
                     @Override
                     public void onClick(View view) {
                         // 菜单点击事件
-                        if (mMenuListener != null) {
-                            mMenuListener.onClick(view, getLayoutPosition(), (Integer) view.getTag());
+                        if (mMenuItemClickListener != null) {
+                            mMenuItemClickListener.onClick(view, getLayoutPosition(), (Integer) view.getTag());
                         }
                     }
                 });
             }
+            FrameLayout contentContainer = itemView.findViewById(R.id.fl_content_layout);
+            contentContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mItemClickListener != null) {
+                        mItemClickListener.onClick(view, getLayoutPosition());
+                    }
+                }
+            });
         }
 
         public View getView(int id) {
@@ -199,6 +213,16 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
          * @param menuPosition 菜单位置
          */
         void onClick(View view, int itemPosition, int menuPosition);
+    }
+
+    public interface OnItemClickListener {
+        /**
+         * ItemView点击回调
+         *
+         * @param view     自定义content的layout，即初始化adapter时传入的layout
+         * @param position 当前点击的item的position
+         */
+        void onClick(View view, int position);
     }
 
     public static class MenuItem {

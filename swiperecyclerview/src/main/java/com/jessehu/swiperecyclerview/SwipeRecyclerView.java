@@ -72,6 +72,8 @@ public class SwipeRecyclerView extends RecyclerView {
      */
     private boolean isSlide;
 
+    private OnMenuStatusListener mMenuStatusListener;
+
     public SwipeRecyclerView(@NonNull Context context) {
         this(context, null);
     }
@@ -129,7 +131,14 @@ public class SwipeRecyclerView extends RecyclerView {
                         || (Math.abs(x - mFirstX) >= mTouchSlop
                         && Math.abs(x - mFirstX) > Math.abs(y - mFirstY));
                 if (slide) {
-
+                    if (mMenuStatusListener != null) {
+                        if (xVelocity < 0 || x - mFirstX < 0) {
+                            mMenuStatusListener.onOpenStart(mFlingView, mPosition);
+                        }
+                        if (xVelocity > 0 || x - mFirstX > 0) {
+                            mMenuStatusListener.onCloseStart(mFlingView, mPosition);
+                        }
+                    }
                     isSlide = true;
                     return true;
                 }
@@ -183,16 +192,28 @@ public class SwipeRecyclerView extends RecyclerView {
                             // 负数表示向左滑动，如果速度大于最小速度则展开
                             mScroller.startScroll(scrollX, 0, mMenuWidth - scrollX, 0,
                                     Math.abs(mMenuWidth - scrollX));
+                            if (mMenuStatusListener != null) {
+                                mMenuStatusListener.onOpenFinish(mFlingView, mPosition);
+                            }
                         } else if (xVelocity >= SNAP_VELOCITY) {
                             // 正数表示向右滑动，如果速度大于最小速度则关闭
                             mScroller.startScroll(scrollX, 0, -scrollX, 0, Math.abs(mMenuWidth - scrollX));
+                            if (mMenuStatusListener != null) {
+                                mMenuStatusListener.onCloseFinish(mFlingView, mPosition);
+                            }
                         } else if (scrollX >= mMenuWidth / 2) {
                             // 如果滑动距离大于菜单宽度的一般则展开
                             mScroller.startScroll(scrollX, 0, mMenuWidth - scrollX, 0,
                                     Math.abs(mMenuWidth - scrollX));
+                            if (mMenuStatusListener != null) {
+                                mMenuStatusListener.onOpenFinish(mFlingView, mPosition);
+                            }
                         } else {
                             // 其他情况全部关闭
                             mScroller.startScroll(scrollX, 0, -scrollX, 0, Math.abs(mMenuWidth - scrollX));
+                            if (mMenuStatusListener != null) {
+                                mMenuStatusListener.onCloseFinish(mFlingView, mPosition);
+                            }
                         }
                         invalidate();
                     }
@@ -302,7 +323,51 @@ public class SwipeRecyclerView extends RecyclerView {
     private void closeMenu() {
         if (mFlingView != null && mFlingView.getScrollX() != 0) {
             mFlingView.scrollTo(0, 0);
+            if (mMenuStatusListener != null) {
+                mMenuStatusListener.onCloseFinish(mFlingView, mPosition);
+            }
         }
+    }
+
+    public void setOnMenuStatusListener(OnMenuStatusListener mMenuStatusListener) {
+        this.mMenuStatusListener = mMenuStatusListener;
+    }
+
+    /**
+     * 菜单打开或关闭状态监听
+     */
+    public interface OnMenuStatusListener {
+        /**
+         * 菜单打开起始状态
+         *
+         * @param view     ItemView
+         * @param position item对应的position
+         */
+        void onOpenStart(View view, int position);
+
+        /**
+         * 菜单打开结束
+         *
+         * @param view     ItemView
+         * @param position item对应的position
+         */
+        void onOpenFinish(View view, int position);
+
+        /**
+         * 菜单关闭起始状态
+         *
+         * @param view     ItemView
+         * @param position item对应的position
+         */
+        void onCloseStart(View view, int position);
+
+        /**
+         * 菜单关闭结束
+         *
+         * @param view     ItemView
+         * @param position item对应的position
+         */
+        void onCloseFinish(View view, int position);
     }
 
 }

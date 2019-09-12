@@ -3,6 +3,7 @@ package com.jessehu.swiperecyclerviewdemo;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private Context mContext;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,33 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int itemPosition, int menuPosition) {
                 Toast.makeText(mContext, titles.get(menuPosition) + contents.get(itemPosition), Toast.LENGTH_SHORT).show();
+            }
+        });
+        listView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
+            @Override
+            public void onOpenStart(View view, int position) {
+                Log.i(TAG, "onOpenStart: " + contents.get(position));
+            }
+
+            @Override
+            public void onOpenFinish(View view, int position) {
+                Log.i(TAG, "onOpenFinish: " + contents.get(position));
+            }
+
+            @Override
+            public void onCloseStart(View view, int position) {
+                Log.i(TAG, "onCloseStart: " + contents.get(position));
+            }
+
+            @Override
+            public void onCloseFinish(View view, int position) {
+                Log.i(TAG, "onCloseFinish: " + contents.get(position));
+            }
+        });
+        swipeAdapter.setOnItemClickListener(new BaseSwipeAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Toast.makeText(mContext, contents.get(position), Toast.LENGTH_SHORT).show();
             }
         });
     }
