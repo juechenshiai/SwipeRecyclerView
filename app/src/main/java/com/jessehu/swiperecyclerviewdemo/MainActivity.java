@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 menuItem.setBgColor(Color.BLUE);
                 menuItem.setTextColor(Color.YELLOW);
+                menuItem.setWidth(300);
             }
             menuItem.setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
             menuItem.setIconGravity(Gravity.END);
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         }
         SwipeAdapter swipeAdapter = new SwipeAdapter(mContext, R.layout.item_view, contents);
         swipeAdapter.setMenus(menus);
-        swipeAdapter.setMenuWidth(200);
+//        swipeAdapter.setMenuWidth(200);
         SwipeRecyclerView listView = findViewById(R.id.srv_list);
         listView.setAdapter(swipeAdapter);
         swipeAdapter.setOnMenuItemClickListener(new BaseSwipeAdapter.OnMenuItemClickListener() {
