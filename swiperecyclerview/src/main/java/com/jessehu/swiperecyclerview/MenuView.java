@@ -37,6 +37,7 @@ public class MenuView extends AppCompatTextView {
         Drawable topDrawable = drawables[1];
         Drawable rightDrawable = drawables[2];
         Drawable bottomDrawable = drawables[3];
+        int drawablePadding = getCompoundDrawablePadding();
 
         // setCompoundDrawables会重新绘制，防止展开状态不断绘制(死循环)
         if (!isRedrawed) {
@@ -46,7 +47,7 @@ public class MenuView extends AppCompatTextView {
                 int iconWidth = leftDrawable.copyBounds().width();
                 int iconHeight = leftDrawable.copyBounds().height();
                 int left =
-                        ((int) (getWidth() - getPaddingLeft() * 2 - iconWidth - getPaint().measureText(getText().toString())) / 2);
+                        ((int) (getWidth() - drawablePadding - getPaddingLeft() * 2 - iconWidth - getPaint().measureText(getText().toString())) / 2);
                 leftDrawable.setBounds(left, 0, left + iconWidth, iconHeight);
                 // 重新绘制图标位置
                 setCompoundDrawables(leftDrawable, null, null, null);
@@ -57,7 +58,7 @@ public class MenuView extends AppCompatTextView {
                 int iconWidth = topDrawable.copyBounds().width();
                 Paint.FontMetrics fontMetrics = getPaint().getFontMetrics();
                 float fontHeight = fontMetrics.descent - fontMetrics.ascent;
-                int top = ((int) (getHeight() - iconHeight - fontHeight) / 2);
+                int top = ((int) (getHeight() - drawablePadding - iconHeight - fontHeight) / 2);
                 topDrawable.setBounds(0, top, iconWidth, iconHeight + top);
 
                 setCompoundDrawables(null, topDrawable, null, null);
@@ -66,7 +67,7 @@ public class MenuView extends AppCompatTextView {
                 int iconWidth = rightDrawable.copyBounds().width();
                 int iconHeight = rightDrawable.copyBounds().height();
                 int right =
-                        ((int) (getWidth() - getPaddingLeft() * 2 - iconWidth - getPaint().measureText(getText().toString())) / 2);
+                        ((int) (getWidth() - drawablePadding - getPaddingLeft() * 2 - iconWidth - getPaint().measureText(getText().toString())) / 2);
                 rightDrawable.setBounds(-right, 0, -right + iconWidth, iconHeight);
                 setCompoundDrawables(null, null, rightDrawable, null);
 
@@ -76,7 +77,7 @@ public class MenuView extends AppCompatTextView {
                 int iconWidth = bottomDrawable.copyBounds().width();
                 Paint.FontMetrics fontMetrics = getPaint().getFontMetrics();
                 float height = fontMetrics.descent - fontMetrics.ascent;
-                int bottom = ((int) (getHeight() - iconHeight - height) / 2);
+                int bottom = ((int) (getHeight() - drawablePadding - iconHeight - height) / 2);
                 bottomDrawable.setBounds(0, -bottom, iconWidth, iconHeight - bottom);
                 setCompoundDrawables(null, null, null, bottomDrawable);
 

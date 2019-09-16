@@ -91,6 +91,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             int textSize = menuItem.getTextSize();
             int width = menuItem.getWidth();
             int padding = menuItem.getPadding();
+            int iconPadding = menuItem.getIconPadding();
 
             MenuView titleTv = new MenuView(mContext);
             titleTv.setTag(i);
@@ -107,6 +108,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
                 titleTv.setTextSize(textSize);
             }
             titleTv.setTextColor(textColor);
+            titleTv.setCompoundDrawablePadding(iconPadding);
             if (icon != null) {
                 if (iconSize <= 0) {
                     iconSize = mMenuWidth / 2;
@@ -139,7 +141,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
                 } else {
                     // padding仅在没有设置任何宽度的时候生效，限制了宽度的情况下，意义不大
                     titleTv.setPadding(padding, 0, padding, 0);
-                    width = (int) (titleTv.getPaint().measureText(title) + 0.5) + iconSize + padding * 2;
+                    width = (int) (titleTv.getPaint().measureText(title) + 0.5) + iconSize + padding * 2 + iconPadding;
                 }
             }
 
@@ -256,11 +258,12 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
         private int iconGravity = Gravity.START;
         private int width;
         private int padding;
+        private int iconPadding;
 
         public MenuItem() {
         }
 
-        public MenuItem(String title, int textColor, int textSize, int bgColor, Drawable bgDrawable, Drawable icon, int iconSize, int iconGravity, int width, int padding) {
+        public MenuItem(String title, int textColor, int textSize, int bgColor, Drawable bgDrawable, Drawable icon, int iconSize, int iconGravity, int width, int padding, int iconPadding) {
             this.title = title;
             this.textColor = textColor;
             this.textSize = textSize;
@@ -271,6 +274,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             this.iconGravity = iconGravity;
             this.width = width;
             this.padding = padding;
+            this.iconPadding = iconPadding;
         }
 
         public String getTitle() {
@@ -351,6 +355,14 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
 
         public void setPadding(int padding) {
             this.padding = padding;
+        }
+
+        public int getIconPadding() {
+            return iconPadding;
+        }
+
+        public void setIconPadding(int iconPadding) {
+            this.iconPadding = iconPadding;
         }
 
         private int dip2px(Context context, float dpValue) {

@@ -41,13 +41,15 @@ public class MainActivity extends AppCompatActivity {
                 menuItem.setBgColor(Color.YELLOW);
                 menuItem.setTextColor(Color.BLUE);
                 menuItem.setPadding(20);
+                menuItem.setIconPadding(20);
             } else {
                 menuItem.setBgColor(Color.BLUE);
                 menuItem.setTextColor(Color.YELLOW);
                 menuItem.setWidth(300);
+                menuItem.setIconPadding(10);
             }
             menuItem.setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
-            menuItem.setIconGravity(Gravity.END);
+            menuItem.setIconGravity(Gravity.BOTTOM);
             menuItem.setIconSize(50);
             menuItem.setTextSize(10);
             menus.add(menuItem);
