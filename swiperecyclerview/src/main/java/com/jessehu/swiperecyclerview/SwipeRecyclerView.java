@@ -16,6 +16,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * SwipeRecyclerView
  *
@@ -114,6 +117,9 @@ public class SwipeRecyclerView extends RecyclerView {
                     if (view != null && mFlingView != view && view.getScrollX() != 0) {
                         // 如果当前滑动的item和上次滑动的item不是同一个且上次滑动的item依然处于展开状态则将上次展开的item关闭
                         view.scrollTo(0, 0);
+                        View itemView = getItemView(view);
+                        List<MenuView> menuViews = getMenuViews(view);
+                        mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
                     }
                     // 获取菜单部分宽度
                     mMenuWidth = mFlingView.findViewById(R.id.ll_menu_layout).getWidth();
@@ -132,11 +138,13 @@ public class SwipeRecyclerView extends RecyclerView {
                         && Math.abs(x - mFirstX) > Math.abs(y - mFirstY));
                 if (slide) {
                     if (mMenuStatusListener != null) {
+                        View itemView = getItemView(mFlingView);
+                        List<MenuView> menuViews = getMenuViews(mFlingView);
                         if (xVelocity < 0 || x - mFirstX < 0) {
-                            mMenuStatusListener.onOpenStart(mFlingView, mPosition);
+                            mMenuStatusListener.onOpenStart(itemView, menuViews, mPosition);
                         }
                         if (xVelocity > 0 || x - mFirstX > 0) {
-                            mMenuStatusListener.onCloseStart(mFlingView, mPosition);
+                            mMenuStatusListener.onCloseStart(itemView, menuViews, mPosition);
                         }
                     }
                     isSlide = true;
@@ -193,26 +201,34 @@ public class SwipeRecyclerView extends RecyclerView {
                             mScroller.startScroll(scrollX, 0, mMenuWidth - scrollX, 0,
                                     Math.abs(mMenuWidth - scrollX));
                             if (mMenuStatusListener != null) {
-                                mMenuStatusListener.onOpenFinish(mFlingView, mPosition);
+                                View itemView = getItemView(mFlingView);
+                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                mMenuStatusListener.onOpenFinish(itemView, menuViews, mPosition);
                             }
                         } else if (xVelocity >= SNAP_VELOCITY) {
                             // 正数表示向右滑动，如果速度大于最小速度则关闭
                             mScroller.startScroll(scrollX, 0, -scrollX, 0, Math.abs(mMenuWidth - scrollX));
                             if (mMenuStatusListener != null) {
-                                mMenuStatusListener.onCloseFinish(mFlingView, mPosition);
+                                View itemView = getItemView(mFlingView);
+                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
                             }
                         } else if (scrollX >= mMenuWidth / 2) {
                             // 如果滑动距离大于菜单宽度的一般则展开
                             mScroller.startScroll(scrollX, 0, mMenuWidth - scrollX, 0,
                                     Math.abs(mMenuWidth - scrollX));
                             if (mMenuStatusListener != null) {
-                                mMenuStatusListener.onOpenFinish(mFlingView, mPosition);
+                                View itemView = getItemView(mFlingView);
+                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                mMenuStatusListener.onOpenFinish(itemView, menuViews, mPosition);
                             }
                         } else {
                             // 其他情况全部关闭
                             mScroller.startScroll(scrollX, 0, -scrollX, 0, Math.abs(mMenuWidth - scrollX));
                             if (mMenuStatusListener != null) {
-                                mMenuStatusListener.onCloseFinish(mFlingView, mPosition);
+                                View itemView = getItemView(mFlingView);
+                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
                             }
                         }
                         invalidate();
@@ -324,9 +340,34 @@ public class SwipeRecyclerView extends RecyclerView {
         if (mFlingView != null && mFlingView.getScrollX() != 0) {
             mFlingView.scrollTo(0, 0);
             if (mMenuStatusListener != null) {
-                mMenuStatusListener.onCloseFinish(mFlingView, mPosition);
+                View itemView = getItemView(mFlingView);
+                List<MenuView> menuViews = getMenuViews(mFlingView);
+                mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
             }
         }
+    }
+
+    /**
+     * 获取所有的菜单视图
+     *
+     * @return
+     */
+    private List<MenuView> getMenuViews(View rootView) {
+        int childCount = ((ViewGroup) rootView.findViewById(R.id.ll_menu_layout)).getChildCount();
+        List<MenuView> menuViews = new ArrayList<>();
+        for (int i = 0; i < childCount; i++) {
+            menuViews.add((MenuView) ((ViewGroup) rootView.findViewById(R.id.ll_menu_layout)).getChildAt(i));
+        }
+        return menuViews;
+    }
+
+    /**
+     * 获取ItemView
+     *
+     * @return
+     */
+    private View getItemView(View rootView) {
+        return ((ViewGroup) rootView.findViewById(R.id.fl_content_layout)).getChildAt(0);
     }
 
     public void setOnMenuStatusListener(OnMenuStatusListener mMenuStatusListener) {
@@ -340,34 +381,38 @@ public class SwipeRecyclerView extends RecyclerView {
         /**
          * 菜单打开起始状态
          *
-         * @param view     ItemView
-         * @param position item对应的position
+         * @param itemView     ItemView
+         * @param menuViewList 菜单View
+         * @param position     item对应的position
          */
-        void onOpenStart(View view, int position);
+        void onOpenStart(View itemView, List<MenuView> menuViewList, int position);
 
         /**
          * 菜单打开结束
          *
-         * @param view     ItemView
-         * @param position item对应的position
+         * @param itemView     ItemView
+         * @param menuViewList 菜单View
+         * @param position     item对应的position
          */
-        void onOpenFinish(View view, int position);
+        void onOpenFinish(View itemView, List<MenuView> menuViewList, int position);
 
         /**
          * 菜单关闭起始状态
          *
-         * @param view     ItemView
-         * @param position item对应的position
+         * @param itemView     ItemView
+         * @param menuViewList 菜单View
+         * @param position     item对应的position
          */
-        void onCloseStart(View view, int position);
+        void onCloseStart(View itemView, List<MenuView> menuViewList, int position);
 
         /**
          * 菜单关闭结束
          *
-         * @param view     ItemView
-         * @param position item对应的position
+         * @param itemView     ItemView
+         * @param menuViewList 菜单View
+         * @param position     item对应的position
          */
-        void onCloseFinish(View view, int position);
+        void onCloseFinish(View itemView, List<MenuView> menuViewList, int position);
     }
 
 }

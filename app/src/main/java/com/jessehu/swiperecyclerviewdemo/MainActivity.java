@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jessehu.swiperecyclerview.BaseSwipeAdapter;
+import com.jessehu.swiperecyclerview.MenuView;
 import com.jessehu.swiperecyclerview.SwipeRecyclerView;
 
 import java.util.ArrayList;
@@ -62,23 +63,25 @@ public class MainActivity extends AppCompatActivity {
         });
         listView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
             @Override
-            public void onOpenStart(View view, int position) {
+            public void onOpenStart(View itemView, List<MenuView> menuViewList, int position) {
                 Log.i(TAG, "onOpenStart: " + contents.get(position));
+                itemView.setBackground(getResources().getDrawable(R.drawable.bg_open));
             }
 
             @Override
-            public void onOpenFinish(View view, int position) {
+            public void onOpenFinish(View itemView, List<MenuView> menuViewList, int position) {
                 Log.i(TAG, "onOpenFinish: " + contents.get(position));
             }
 
             @Override
-            public void onCloseStart(View view, int position) {
+            public void onCloseStart(View itemView, List<MenuView> menuViewList, int position) {
                 Log.i(TAG, "onCloseStart: " + contents.get(position));
             }
 
             @Override
-            public void onCloseFinish(View view, int position) {
+            public void onCloseFinish(View itemView, List<MenuView> menuViewList, int position) {
                 Log.i(TAG, "onCloseFinish: " + contents.get(position));
+                itemView.setBackground(getResources().getDrawable(R.drawable.bg_normal));
             }
         });
         swipeAdapter.setOnItemClickListener(new BaseSwipeAdapter.OnItemClickListener() {
