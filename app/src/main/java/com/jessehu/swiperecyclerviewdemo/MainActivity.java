@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
             if (i == 0) {
                 menuItem.setBgColor(Color.YELLOW);
                 menuItem.setTextColor(Color.BLUE);
+                menuItem.setPadding(20);
             } else {
                 menuItem.setBgColor(Color.BLUE);
                 menuItem.setTextColor(Color.YELLOW);

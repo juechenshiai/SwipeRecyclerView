@@ -90,6 +90,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             Drawable bgDrawable = menuItem.getBgDrawable();
             int textSize = menuItem.getTextSize();
             int width = menuItem.getWidth();
+            int padding = menuItem.getPadding();
 
             MenuView titleTv = new MenuView(mContext);
             titleTv.setTag(i);
@@ -136,7 +137,9 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
                 if (mMenuWidth != 0) {
                     width = mMenuWidth;
                 } else {
-                    width = (int) (titleTv.getPaint().measureText(title) + 0.5) + iconSize;
+                    // padding仅在没有设置任何宽度的时候生效，限制了宽度的情况下，意义不大
+                    titleTv.setPadding(padding, 0, padding, 0);
+                    width = (int) (titleTv.getPaint().measureText(title) + 0.5) + iconSize + padding * 2;
                 }
             }
 
@@ -252,11 +255,12 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
         private int iconSize;
         private int iconGravity = Gravity.START;
         private int width;
+        private int padding;
 
         public MenuItem() {
         }
 
-        public MenuItem(String title, int textColor, int textSize, int bgColor, Drawable bgDrawable, Drawable icon, int iconSize, int iconGravity, int width) {
+        public MenuItem(String title, int textColor, int textSize, int bgColor, Drawable bgDrawable, Drawable icon, int iconSize, int iconGravity, int width, int padding) {
             this.title = title;
             this.textColor = textColor;
             this.textSize = textSize;
@@ -266,6 +270,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             this.iconSize = iconSize;
             this.iconGravity = iconGravity;
             this.width = width;
+            this.padding = padding;
         }
 
         public String getTitle() {
@@ -338,6 +343,14 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
 
         public void setWidth(int width) {
             this.width = width;
+        }
+
+        public int getPadding() {
+            return padding;
+        }
+
+        public void setPadding(int padding) {
+            this.padding = padding;
         }
 
         private int dip2px(Context context, float dpValue) {

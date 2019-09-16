@@ -45,7 +45,8 @@ public class MenuView extends AppCompatTextView {
                 // 左边图标
                 int iconWidth = leftDrawable.copyBounds().width();
                 int iconHeight = leftDrawable.copyBounds().height();
-                int left = ((int) (getWidth() - iconWidth - getPaint().measureText(getText().toString())) / 2);
+                int left =
+                        ((int) (getWidth() - getPaddingLeft() * 2 - iconWidth - getPaint().measureText(getText().toString())) / 2);
                 leftDrawable.setBounds(left, 0, left + iconWidth, iconHeight);
                 // 重新绘制图标位置
                 setCompoundDrawables(leftDrawable, null, null, null);
@@ -64,7 +65,8 @@ public class MenuView extends AppCompatTextView {
                 // 右边图标
                 int iconWidth = rightDrawable.copyBounds().width();
                 int iconHeight = rightDrawable.copyBounds().height();
-                int right = ((int) (getWidth() - iconWidth - getPaint().measureText(getText().toString())) / 2);
+                int right =
+                        ((int) (getWidth() - getPaddingLeft() * 2 - iconWidth - getPaint().measureText(getText().toString())) / 2);
                 rightDrawable.setBounds(-right, 0, -right + iconWidth, iconHeight);
                 setCompoundDrawables(null, null, rightDrawable, null);
 
