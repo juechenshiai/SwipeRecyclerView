@@ -15,7 +15,7 @@ SwipeRecyclerView
 ### 1. 添加library
 Gradle
 ```
-implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.0.2'
+implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.0.3'
 ```
 
 ### 使用
