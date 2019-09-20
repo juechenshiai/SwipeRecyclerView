@@ -1,6 +1,8 @@
 SwipeRecyclerView
 ---
 
+侧滑菜单很多，对于重复造轮子的问题，主要是没有找到合适的，顺便练练手
+
 * 左滑菜单(水平排列)
     * 支持定义多个菜单
     * 支持定义每个菜单的宽度、背景、图标
@@ -9,6 +11,12 @@ SwipeRecyclerView
     * 菜单点击事件
     * item点击事件
     * 侧滑状态(包括展开关闭起始状态，展开关闭结束状态)
+
+### 1. 添加library
+Gradle
+```
+implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.0.2'
+```
 
 ### 使用
 #### 1. 布局中添加SwipeRecyclerView
@@ -57,7 +65,7 @@ menuItem.setIconGravity(Gravity.BOTTOM);
 // 设置图标大小，如果不设置，默认为菜单文字高度
 menuItem.setIconSize(50);
 ```
-以上属性可以根据自身需要选择设置
+以上属性可以根据自身需要选择设置  
 菜单高度由ItemView的高度决定
 
 #### 3. 继承BaseSwipeAdapter
@@ -136,7 +144,7 @@ listView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
     }
 });
 ```
-注意：点击事件是Adapter回调的而侧滑状态是SwipeRecyclerView回调的s
+注意：点击事件是Adapter回调的而侧滑状态是SwipeRecyclerView回调的  
 在进行其他操作之前，请先关闭已打开的菜单`listView.closeMenu()`
 
 最后送上丑图一张  
