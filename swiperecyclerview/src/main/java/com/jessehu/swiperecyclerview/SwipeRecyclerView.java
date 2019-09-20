@@ -336,7 +336,7 @@ public class SwipeRecyclerView extends RecyclerView {
     /**
      * 关闭已展开的菜单
      */
-    private void closeMenu() {
+    public void closeMenu() {
         if (mFlingView != null && mFlingView.getScrollX() != 0) {
             mFlingView.scrollTo(0, 0);
             if (mMenuStatusListener != null) {
