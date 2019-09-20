@@ -18,6 +18,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * demo
+ *
+ * @author JesseHu
+ * @date 2019/9/20
+ */
 public class MainActivity extends AppCompatActivity {
     private Context mContext;
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -39,25 +45,29 @@ public class MainActivity extends AppCompatActivity {
             menuItem.setTitle(title);
             if (i == 0) {
                 menuItem.setBgColor(Color.YELLOW);
-                menuItem.setTextColor(Color.BLUE);
+                menuItem.setTextColor(Color.RED);
                 menuItem.setPadding(20);
                 menuItem.setIconPadding(20);
+                menuItem.setWidth(150);
+                menuItem.setIconGravity(Gravity.END);
+                menuItem.setTextSize(20);
             } else {
                 menuItem.setBgColor(Color.BLUE);
+                menuItem.setBgDrawable(getResources().getDrawable(R.drawable.bg_menu));
                 menuItem.setTextColor(Color.YELLOW);
-                menuItem.setWidth(300);
+                menuItem.setWidth(200);
                 menuItem.setIconPadding(10);
+                menuItem.setIconGravity(Gravity.BOTTOM);
+                menuItem.setIconSize(80);
+                menuItem.setTextSize(10);
             }
             menuItem.setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
-            menuItem.setIconGravity(Gravity.BOTTOM);
-            menuItem.setIconSize(50);
-            menuItem.setTextSize(10);
             menus.add(menuItem);
         }
         SwipeAdapter swipeAdapter = new SwipeAdapter(mContext, R.layout.item_view, contents);
         swipeAdapter.setMenus(menus);
 //        swipeAdapter.setMenuWidth(200);
-        SwipeRecyclerView listView = findViewById(R.id.srv_list);
+        final SwipeRecyclerView listView = findViewById(R.id.srv_list);
         listView.setAdapter(swipeAdapter);
         swipeAdapter.setOnMenuItemClickListener(new BaseSwipeAdapter.OnMenuItemClickListener() {
             @Override
@@ -91,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         swipeAdapter.setOnItemClickListener(new BaseSwipeAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, int position) {
+                listView.closeMenu();
                 Toast.makeText(mContext, contents.get(position), Toast.LENGTH_SHORT).show();
             }
         });
