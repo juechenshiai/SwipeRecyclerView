@@ -136,8 +136,8 @@ listView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
     }
 });
 ```
-注意：点击事件是Adapter回调的而侧滑状态是SwipeRecyclerView回调的
+注意：点击事件是Adapter回调的而侧滑状态是SwipeRecyclerView回调的s
 在进行其他操作之前，请先关闭已打开的菜单`listView.closeMenu()`
 
 最后送上丑图一张
-![丑图](screenshot\1.gif)
+![丑图](screenshot/1.gif)
