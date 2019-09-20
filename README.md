@@ -140,4 +140,4 @@ listView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
 在进行其他操作之前，请先关闭已打开的菜单`listView.closeMenu()`
 
 最后送上丑图一张
-![丑图](D:\workspace\ASProjects\SwipeRecyclerView\screenshot\1.gif)
+![丑图](screenshot\1.gif)
