@@ -98,7 +98,6 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             titleTv.setText(title);
             titleTv.setGravity(Gravity.CENTER);
 
-            titleTv.setWidth(width);
             if (bgDrawable != null) {
                 titleTv.setBackground(bgDrawable);
             } else {
@@ -109,9 +108,21 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             }
             titleTv.setTextColor(textColor);
             titleTv.setCompoundDrawablePadding(iconPadding);
+
+            if (width == 0) {
+                if (mMenuWidth != 0) {
+                    width = mMenuWidth;
+                } else {
+                    // padding仅在没有设置任何宽度的时候生效，限制了宽度的情况下，意义不大
+                    titleTv.setPadding(padding, 0, padding, 0);
+                    width = (int) (titleTv.getPaint().measureText(title) + 0.5) + iconSize + padding * 2 + iconPadding;
+                }
+            }
+            titleTv.setWidth(width);
+
             if (icon != null) {
                 if (iconSize <= 0) {
-                    iconSize = mMenuWidth / 2;
+                    iconSize = width / 2;
                 }
                 icon.setBounds(0, 0, iconSize, iconSize);
 
@@ -135,15 +146,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
             } else {
                 iconSize = 0;
             }
-            if (width == 0) {
-                if (mMenuWidth != 0) {
-                    width = mMenuWidth;
-                } else {
-                    // padding仅在没有设置任何宽度的时候生效，限制了宽度的情况下，意义不大
-                    titleTv.setPadding(padding, 0, padding, 0);
-                    width = (int) (titleTv.getPaint().measureText(title) + 0.5) + iconSize + padding * 2 + iconPadding;
-                }
-            }
+
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT);
             titleTv.setLayoutParams(params);
