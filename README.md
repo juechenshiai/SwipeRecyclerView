@@ -17,7 +17,7 @@ Gradle
 ```
 // SwipeRecyclerView基于recyclerview，因此必须添加recyclerview，版本随意
 implementation 'androidx.recyclerview:recyclerview:1.0.0'
-implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.0.3'
+implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.0.4'
 ```
 
 ### 使用
