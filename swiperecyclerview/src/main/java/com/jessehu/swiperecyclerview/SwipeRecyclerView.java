@@ -75,6 +75,28 @@ public class SwipeRecyclerView extends RecyclerView {
      */
     private boolean isSlide;
 
+    /**
+     * 展开开始
+     */
+    private static final int STATUS_OPEN_START = 1;
+    /**
+     * 展开结束
+     */
+    private static final int STATUS_OPEN_FINISH = 2;
+    /**
+     * 关闭开始
+     */
+    private static final int STATUS_CLOSE_SATRT = 3;
+    /**
+     * 关闭结束
+     */
+    private static final int STATUS_CLOSE_FINISH = 4;
+
+    /**
+     * 当前状态，默认为关闭状态
+     */
+    private int mCurrentStatus = STATUS_CLOSE_FINISH;
+
     private OnMenuStatusListener mMenuStatusListener;
 
     public SwipeRecyclerView(@NonNull Context context) {
@@ -114,12 +136,15 @@ public class SwipeRecyclerView extends RecyclerView {
                     View view = mFlingView;
                     // 获取当前滑动的视图
                     mFlingView = (ViewGroup) getChildAt(mPosition - getFirstPosition());
+                    // 如果当前滑动的item和上次滑动的item不是同一个且上次滑动的item依然处于展开状态则将上次展开的item关闭
                     if (view != null && mFlingView != view && view.getScrollX() != 0) {
-                        // 如果当前滑动的item和上次滑动的item不是同一个且上次滑动的item依然处于展开状态则将上次展开的item关闭
                         view.scrollTo(0, 0);
-                        View itemView = getItemView(view);
-                        List<MenuView> menuViews = getMenuViews(view);
-                        mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
+                        if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
+                            View itemView = getItemView(view);
+                            List<MenuView> menuViews = getMenuViews(view);
+                            mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
+                            mCurrentStatus = STATUS_CLOSE_FINISH;
+                        }
                     }
                     // 获取菜单部分宽度
                     mMenuWidth = mFlingView.findViewById(R.id.ll_menu_layout).getWidth();
@@ -140,11 +165,13 @@ public class SwipeRecyclerView extends RecyclerView {
                     if (mMenuStatusListener != null) {
                         View itemView = getItemView(mFlingView);
                         List<MenuView> menuViews = getMenuViews(mFlingView);
-                        if (xVelocity < 0 || x - mFirstX < 0) {
+                        if ((xVelocity < 0 || x - mFirstX < 0) && mCurrentStatus != STATUS_OPEN_START) {
                             mMenuStatusListener.onOpenStart(itemView, menuViews, mPosition);
+                            mCurrentStatus = STATUS_OPEN_START;
                         }
-                        if (xVelocity > 0 || x - mFirstX > 0) {
+                        if ((xVelocity > 0 || x - mFirstX > 0) && mCurrentStatus != STATUS_CLOSE_SATRT) {
                             mMenuStatusListener.onCloseStart(itemView, menuViews, mPosition);
+                            mCurrentStatus = STATUS_CLOSE_SATRT;
                         }
                     }
                     isSlide = true;
@@ -175,17 +202,43 @@ public class SwipeRecyclerView extends RecyclerView {
                         float dx = mLastX - x;
                         float scrollX = mFlingView.getScrollX();
                         float newX = scrollX + dx;
+
                         if (newX < 0) {
                             newX = 0;
                             dx = -scrollX;
-                        }
-                        if (newX >= 0) {
-                            // 滑动距离不能大于菜单的宽度
-                            if (newX >= mMenuWidth) {
-                                dx = mMenuWidth - scrollX;
+                            if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
+                                View itemView = getItemView(mFlingView);
+                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_CLOSE_FINISH;
                             }
-                            mFlingView.scrollBy((int) dx, 0);
                         }
+
+                        // 滑动距离不能大于菜单的宽度
+                        if (newX >= mMenuWidth) {
+                            dx = mMenuWidth - scrollX;
+                            if (mMenuStatusListener != null && mCurrentStatus != STATUS_OPEN_FINISH) {
+                                View itemView = getItemView(mFlingView);
+                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                mMenuStatusListener.onOpenFinish(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_OPEN_FINISH;
+                            }
+                        }
+
+                        if (mMenuStatusListener != null) {
+                            View itemView = getItemView(mFlingView);
+                            List<MenuView> menuViews = getMenuViews(mFlingView);
+                            if (dx > 0 && mCurrentStatus != STATUS_OPEN_START) {
+                                mMenuStatusListener.onOpenStart(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_OPEN_START;
+                            }
+                            if (dx < 0 && mCurrentStatus != STATUS_CLOSE_SATRT) {
+                                mMenuStatusListener.onCloseStart(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_CLOSE_SATRT;
+                            }
+                        }
+
+                        mFlingView.scrollBy((int) dx, 0);
                         mLastX = x;
                     }
                     break;
@@ -200,35 +253,39 @@ public class SwipeRecyclerView extends RecyclerView {
                             // 负数表示向左滑动，如果速度大于最小速度则展开
                             mScroller.startScroll(scrollX, 0, mMenuWidth - scrollX, 0,
                                     Math.abs(mMenuWidth - scrollX));
-                            if (mMenuStatusListener != null) {
+                            if (mMenuStatusListener != null && mCurrentStatus != STATUS_OPEN_FINISH) {
                                 View itemView = getItemView(mFlingView);
                                 List<MenuView> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onOpenFinish(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_OPEN_FINISH;
                             }
                         } else if (xVelocity >= SNAP_VELOCITY) {
                             // 正数表示向右滑动，如果速度大于最小速度则关闭
                             mScroller.startScroll(scrollX, 0, -scrollX, 0, Math.abs(mMenuWidth - scrollX));
-                            if (mMenuStatusListener != null) {
+                            if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
                                 View itemView = getItemView(mFlingView);
                                 List<MenuView> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_CLOSE_FINISH;
                             }
                         } else if (scrollX >= mMenuWidth / 2) {
                             // 如果滑动距离大于菜单宽度的一般则展开
                             mScroller.startScroll(scrollX, 0, mMenuWidth - scrollX, 0,
                                     Math.abs(mMenuWidth - scrollX));
-                            if (mMenuStatusListener != null) {
+                            if (mMenuStatusListener != null && mCurrentStatus != STATUS_OPEN_FINISH) {
                                 View itemView = getItemView(mFlingView);
                                 List<MenuView> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onOpenFinish(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_OPEN_FINISH;
                             }
                         } else {
                             // 其他情况全部关闭
                             mScroller.startScroll(scrollX, 0, -scrollX, 0, Math.abs(mMenuWidth - scrollX));
-                            if (mMenuStatusListener != null) {
+                            if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
                                 View itemView = getItemView(mFlingView);
                                 List<MenuView> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_CLOSE_FINISH;
                             }
                         }
                         invalidate();
@@ -339,10 +396,11 @@ public class SwipeRecyclerView extends RecyclerView {
     public void closeMenu() {
         if (mFlingView != null && mFlingView.getScrollX() != 0) {
             mFlingView.scrollTo(0, 0);
-            if (mMenuStatusListener != null) {
+            if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
                 View itemView = getItemView(mFlingView);
                 List<MenuView> menuViews = getMenuViews(mFlingView);
                 mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
+                mCurrentStatus = STATUS_CLOSE_FINISH;
             }
         }
     }
