@@ -85,11 +85,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onOpenFinish(View itemView, List<MenuView> menuViewList, int position) {
                 Log.i(TAG, "onOpenFinish: " + contents.get(position));
+                itemView.setBackground(getResources().getDrawable(R.drawable.bg_opened));
             }
 
             @Override
             public void onCloseStart(View itemView, List<MenuView> menuViewList, int position) {
                 Log.i(TAG, "onCloseStart: " + contents.get(position));
+                itemView.setBackground(getResources().getDrawable(R.drawable.bg_open));
             }
 
             @Override
