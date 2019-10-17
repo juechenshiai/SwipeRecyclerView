@@ -30,8 +30,7 @@ implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.1.0'
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.jessehu.swiperecyclerviewdemo.DemoOldActivity">
+    android:layout_height="match_parent">
 
     <com.jessehu.swiperecyclerview.SwipeRecyclerView
         android:id="@+id/srv_list"
