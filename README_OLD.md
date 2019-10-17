@@ -3,8 +3,6 @@ SwipeRecyclerView
 
 侧滑菜单很多，对于重复造轮子的问题，主要是没有找到合适的，顺便练练手
 
-[旧版文档 BaseOldSwipeAdapter](./README_OLD.md)
-
 * 左滑菜单(水平排列)
     * 支持定义多个菜单
     * 支持定义每个菜单的宽度、背景、图标等
@@ -19,7 +17,7 @@ Gradle
 ```
 // SwipeRecyclerView基于recyclerview，因此必须添加recyclerview，版本随意
 implementation 'androidx.recyclerview:recyclerview:1.0.0'
-// 1.0.0以上版本才有新的Adapter，0.0.4以及以下版本只有旧版Adapter
+// 0.0.4以下版本只有支持旧版本的adapter,同时ClickListener和MenuItem在BaseSwipeAdapter下
 implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.1.0'
 ```
 
@@ -76,53 +74,28 @@ menuItem.setIconSize(50);
 #### 3. 继承BaseSwipeAdapter
 ```java
 /**
- * 示例,类似于RecyclerView.Adapter的使用
+ * 示例
  */
-public class SwipeAdapter extends BaseSwipeAdapter<SwipeAdapter.ContentViewHolder> {
-    private List<String> contentData;
+public class OldSwipeAdapter extends BaseOldSwipeAdapter<String> {
 
-    public SwipeAdapter(Context context, List<String> contentData) {
-        super(context);
-        this.contentData = contentData;
+    public OldSwipeAdapter(Context mContext, int mLayoutId, List<String> contentData) {
+        super(mContext, mLayoutId, contentData);
     }
 
     @Override
-    public ContentViewHolder onCreateContentViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // item的布局，不包含menu
-        View itemView = mInflater.inflate(R.layout.item_view, parent, false);
-        return new ContentViewHolder(itemView);
-    }
-
-    @Override
-    public void onBindContentViewHolder(ContentViewHolder holder, int position) {
-        holder.titleTv.setText(contentData.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return contentData.size();
-    }
-
-    public class ContentViewHolder extends BaseSwipeAdapter.BaseViewHolder {
-        private TextView titleTv;
-
-        // ItemView不包含menu
-        public ContentViewHolder(@NonNull View itemView) {
-            super(itemView);
-            titleTv = itemView.findViewById(R.id.tv_title);
-        }
+    public void onBindViewHolder(@NonNull BaseOldSwipeAdapter.SwipeHolder holder, String data, int position) {
+        TextView titleTv = (TextView) holder.getView(R.id.tv_title);
+        titleTv.setText(data);
     }
 }
 ```
-类似于RecyclerView.Adapter的使用  
-`BaseSwipeAdapter` 对应 `RecyclerView.Adapter`  
-`onCreateContentViewHolder()` 对应 `onCreateViewHolder()`  
-`onBindContentViewHolder()` 对应 `onBindViewHolder()`  
-`BaseSwipeAdapter.BaseViewHolder` 对应 `RecyclerView.ViewHolder`
+1. 构造函数中mLayoutId表示自定义的正常显示的ItemView的layout id
+2. 在onBindViewHolder中通过holder.getView获取对应id的view，然后设置对应的数据
+3. `BaseSwipeAdapter<T>`构造函数中的`List<T> contentData` 和onBindViewHolder中的`T data`的类型T为自定义数据类型，根据需求自定义
 
 #### 4. 设置Adapter
 ```java
-SwipeAdapter swipeAdapter = new SwipeAdapter(mContext, contents);
+OldSwipeAdapter swipeAdapter = new OldSwipeAdapter(mContext, R.layout.item_view, contents);
 // 设置菜单
 swipeAdapter.setMenus(List<MenuItem>);
 // 设置菜单宽度，如果在创建菜单的时候没有设置宽度，将会使用该宽度，如果菜单宽度都一样，可以使用该属性统一设置
