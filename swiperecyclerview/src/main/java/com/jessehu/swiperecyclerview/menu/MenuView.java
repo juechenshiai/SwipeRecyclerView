@@ -1,4 +1,4 @@
-package com.jessehu.swiperecyclerview;
+package com.jessehu.swiperecyclerview.menu;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,7 +15,7 @@ import androidx.appcompat.widget.AppCompatTextView;
  * @date 2019/9/11
  */
 public class MenuView extends AppCompatTextView {
-    private boolean isRedrawed = false;
+    private boolean isRedrawn = false;
 
     public MenuView(Context context) {
         super(context);
@@ -40,8 +40,8 @@ public class MenuView extends AppCompatTextView {
         int drawablePadding = getCompoundDrawablePadding();
 
         // setCompoundDrawables会重新绘制，防止展开状态不断绘制(死循环)
-        if (!isRedrawed) {
-            isRedrawed = true;
+        if (!isRedrawn) {
+            isRedrawn = true;
             if (leftDrawable != null) {
                 // 左边图标
                 int iconWidth = leftDrawable.copyBounds().width();

@@ -1,7 +1,6 @@
-package com.jessehu.swiperecyclerview;
+package com.jessehu.swiperecyclerview.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
@@ -15,16 +14,22 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jessehu.swiperecyclerview.R;
+import com.jessehu.swiperecyclerview.impl.OnItemClickListener;
+import com.jessehu.swiperecyclerview.impl.OnMenuItemClickListener;
+import com.jessehu.swiperecyclerview.menu.MenuItem;
+import com.jessehu.swiperecyclerview.menu.MenuView;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * BaseSwipeAdapter
+ * BaseOldSwipeAdapter
  *
  * @author JesseHu
  * @date 2019/9/10
  */
-public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipeAdapter.SwipeHolder> {
+public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOldSwipeAdapter.SwipeHolder> {
     private LayoutInflater mInflater;
     private List<MenuItem> menuItems = new ArrayList<>();
     private Context mContext;
@@ -34,7 +39,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
     private OnMenuItemClickListener mMenuItemClickListener;
     private OnItemClickListener mItemClickListener;
 
-    public BaseSwipeAdapter(Context mContext, int mLayoutId, List<T> contentData) {
+    public BaseOldSwipeAdapter(Context mContext, int mLayoutId, List<T> contentData) {
         this.mContext = mContext;
         this.mLayoutId = mLayoutId;
         if (contentData == null) {
@@ -47,10 +52,10 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
     /**
      * 设置菜单标题
      *
-     * @param menuTitles 菜单标题
+     * @param menus 菜单标题
      */
-    public void setMenus(List<MenuItem> menuTitles) {
-        this.menuItems.addAll(menuTitles);
+    public void setMenus(List<MenuItem> menus) {
+        this.menuItems.addAll(menus);
     }
 
     /**
@@ -64,7 +69,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
 
     @NonNull
     @Override
-    public BaseSwipeAdapter.SwipeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BaseOldSwipeAdapter.SwipeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = mInflater.inflate(R.layout.item_layout, parent, false);
         FrameLayout contentContainer = itemView.findViewById(R.id.fl_content_layout);
         LinearLayout menuContainer = itemView.findViewById(R.id.ll_menu_layout);
@@ -164,7 +169,7 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
 
 
     @Override
-    public void onBindViewHolder(@NonNull BaseSwipeAdapter.SwipeHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BaseOldSwipeAdapter.SwipeHolder holder, int position) {
         T data = mContentData.get(position);
         onBindViewHolder(holder, data, position);
     }
@@ -172,11 +177,11 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
     /**
      * 绑定数据，交由用户自己处理数据与view之间的关系
      *
-     * @param holder   BaseSwipeAdapter.SwipeHolder
+     * @param holder   BaseOldSwipeAdapter.SwipeHolder
      * @param data     单条数据
      * @param position Position
      */
-    public abstract void onBindViewHolder(@NonNull BaseSwipeAdapter.SwipeHolder holder, T data, int position);
+    public abstract void onBindViewHolder(@NonNull BaseOldSwipeAdapter.SwipeHolder holder, T data, int position);
 
     @Override
     public int getItemCount() {
@@ -228,151 +233,6 @@ public abstract class BaseSwipeAdapter<T> extends RecyclerView.Adapter<BaseSwipe
                 mViews.put(id, view);
             }
             return view;
-        }
-    }
-
-    public interface OnMenuItemClickListener {
-        /**
-         * 菜单点击回调
-         *
-         * @param view         菜单对应的view
-         * @param itemPosition ItemView在RecyclerView中的位置
-         * @param menuPosition 菜单位置
-         */
-        void onClick(View view, int itemPosition, int menuPosition);
-    }
-
-    public interface OnItemClickListener {
-        /**
-         * ItemView点击回调
-         *
-         * @param view     自定义content的layout，即初始化adapter时传入的layout
-         * @param position 当前点击的item的position
-         */
-        void onClick(View view, int position);
-    }
-
-    public static class MenuItem {
-        private String title;
-        private int textColor = Color.BLACK;
-        private int textSize;
-        private int bgColor = Color.WHITE;
-        private Drawable bgDrawable;
-        private Drawable icon;
-        private int iconSize;
-        private int iconGravity = Gravity.START;
-        private int width;
-        private int padding;
-        private int iconPadding;
-
-        public MenuItem() {
-        }
-
-        public MenuItem(String title, int textColor, int textSize, int bgColor, Drawable bgDrawable, Drawable icon, int iconSize, int iconGravity, int width, int padding, int iconPadding) {
-            this.title = title;
-            this.textColor = textColor;
-            this.textSize = textSize;
-            this.bgColor = bgColor;
-            this.bgDrawable = bgDrawable;
-            this.icon = icon;
-            this.iconSize = iconSize;
-            this.iconGravity = iconGravity;
-            this.width = width;
-            this.padding = padding;
-            this.iconPadding = iconPadding;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public int getTextColor() {
-            return textColor;
-        }
-
-        public void setTextColor(int textColor) {
-            this.textColor = textColor;
-        }
-
-        public int getTextSize() {
-            return textSize;
-        }
-
-        public void setTextSize(int textSize) {
-            this.textSize = textSize;
-        }
-
-        public int getBgColor() {
-            return bgColor;
-        }
-
-        public void setBgColor(int bgColor) {
-            this.bgColor = bgColor;
-        }
-
-        public Drawable getBgDrawable() {
-            return bgDrawable;
-        }
-
-        public void setBgDrawable(Drawable bgDrawable) {
-            this.bgDrawable = bgDrawable;
-        }
-
-        public Drawable getIcon() {
-            return icon;
-        }
-
-        public void setIcon(Drawable icon) {
-            this.icon = icon;
-        }
-
-        public int getIconSize() {
-            return iconSize;
-        }
-
-        public void setIconSize(int iconSize) {
-            this.iconSize = iconSize;
-        }
-
-        public int getIconGravity() {
-            return iconGravity;
-        }
-
-        public void setIconGravity(int iconGravity) {
-            this.iconGravity = iconGravity;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public void setWidth(int width) {
-            this.width = width;
-        }
-
-        public int getPadding() {
-            return padding;
-        }
-
-        public void setPadding(int padding) {
-            this.padding = padding;
-        }
-
-        public int getIconPadding() {
-            return iconPadding;
-        }
-
-        public void setIconPadding(int iconPadding) {
-            this.iconPadding = iconPadding;
-        }
-
-        private int dip2px(Context context, float dpValue) {
-            final float scale = context.getResources().getDisplayMetrics().density;
-            return (int) (dpValue * scale + 0.5f);
         }
     }
 }

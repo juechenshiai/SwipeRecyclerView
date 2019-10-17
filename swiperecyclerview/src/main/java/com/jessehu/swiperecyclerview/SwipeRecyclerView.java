@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jessehu.swiperecyclerview.menu.MenuView;
+
 import java.util.ArrayList;
 import java.util.List;
 
