@@ -154,31 +154,34 @@ public class SwipeRecyclerView extends RecyclerView {
 
                 break;
             case MotionEvent.ACTION_MOVE:
-                // 滑动时获取1s内滑动速度
-                mVelocityTracker.computeCurrentVelocity(1000);
-                float xVelocity = mVelocityTracker.getXVelocity();
-                float yVelocity = mVelocityTracker.getYVelocity();
-                // 水平速度>最小速度且水平速度大于垂直速度或者水平移动距离>最小移动距离且水平移动距离大于垂直移动距离
-                boolean slide = (Math.abs(xVelocity) > SNAP_VELOCITY
-                        && Math.abs(xVelocity) > Math.abs(yVelocity))
-                        || (Math.abs(x - mFirstX) >= mTouchSlop
-                        && Math.abs(x - mFirstX) > Math.abs(y - mFirstY));
-                if (slide) {
-                    if (mMenuStatusListener != null) {
-                        View itemView = getItemView(mFlingView);
-                        List<View> menuViews = getMenuViews(mFlingView);
-                        if ((xVelocity < 0 || x - mFirstX < 0) && mCurrentStatus != STATUS_OPEN_START) {
-                            mMenuStatusListener.onOpenStart(itemView, menuViews, mPosition);
-                            mCurrentStatus = STATUS_OPEN_START;
+                if (mMenuWidth > 0) {
+                    // 滑动时获取1s内滑动速度
+                    mVelocityTracker.computeCurrentVelocity(1000);
+                    float xVelocity = mVelocityTracker.getXVelocity();
+                    float yVelocity = mVelocityTracker.getYVelocity();
+                    // 水平速度>最小速度且水平速度大于垂直速度或者水平移动距离>最小移动距离且水平移动距离大于垂直移动距离
+                    boolean slide = (Math.abs(xVelocity) > SNAP_VELOCITY
+                            && Math.abs(xVelocity) > Math.abs(yVelocity))
+                            || (Math.abs(x - mFirstX) >= mTouchSlop
+                            && Math.abs(x - mFirstX) > Math.abs(y - mFirstY));
+                    if (slide) {
+                        if (mMenuStatusListener != null) {
+                            View itemView = getItemView(mFlingView);
+                            List<View> menuViews = getMenuViews(mFlingView);
+                            if ((xVelocity < 0 || x - mFirstX < 0) && mCurrentStatus != STATUS_OPEN_START) {
+                                mMenuStatusListener.onOpenStart(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_OPEN_START;
+                            }
+                            if ((xVelocity > 0 || x - mFirstX > 0) && mCurrentStatus != STATUS_CLOSE_SATRT) {
+                                mMenuStatusListener.onCloseStart(itemView, menuViews, mPosition);
+                                mCurrentStatus = STATUS_CLOSE_SATRT;
+                            }
                         }
-                        if ((xVelocity > 0 || x - mFirstX > 0) && mCurrentStatus != STATUS_CLOSE_SATRT) {
-                            mMenuStatusListener.onCloseStart(itemView, menuViews, mPosition);
-                            mCurrentStatus = STATUS_CLOSE_SATRT;
-                        }
+                        isSlide = true;
+                        return true;
                     }
-                    isSlide = true;
-                    return true;
                 }
+
                 break;
             case MotionEvent.ACTION_UP:
                 releaseVelocity();
@@ -191,7 +194,7 @@ public class SwipeRecyclerView extends RecyclerView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        if (isSlide && mPosition != INVALID_POSITION) {
+        if (isSlide && mPosition != INVALID_POSITION && mMenuWidth > 0) {
             float x = e.getX();
             getVelocity(e);
             switch (e.getAction()) {
