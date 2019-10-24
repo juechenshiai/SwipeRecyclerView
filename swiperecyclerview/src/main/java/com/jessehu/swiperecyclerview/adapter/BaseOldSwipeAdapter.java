@@ -30,9 +30,9 @@ import java.util.List;
  * @date 2019/9/10
  */
 public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOldSwipeAdapter.SwipeHolder> {
-    private LayoutInflater mInflater;
-    private List<MenuItem> menuItems = new ArrayList<>();
-    private Context mContext;
+    protected LayoutInflater mInflater;
+    private List<MenuItem> mMenuItems;
+    protected Context mContext;
     private int mLayoutId;
     private int mMenuWidth;
     private List<T> mContentData;
@@ -42,6 +42,7 @@ public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOl
     public BaseOldSwipeAdapter(Context mContext, int mLayoutId, List<T> contentData) {
         this.mContext = mContext;
         this.mLayoutId = mLayoutId;
+        mMenuItems = new ArrayList<>();
         if (contentData == null) {
             contentData = new ArrayList<>();
         }
@@ -55,7 +56,7 @@ public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOl
      * @param menus 菜单标题
      */
     public void setMenus(List<MenuItem> menus) {
-        this.menuItems.addAll(menus);
+        this.mMenuItems.addAll(menus);
     }
 
     /**
@@ -78,7 +79,7 @@ public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOl
         View contentLayout = mInflater.inflate(mLayoutId, null, false);
         contentContainer.addView(contentLayout);
 
-        int size = menuItems.size();
+        int size = mMenuItems.size();
         // 设置菜单容器的宽度，否则为0
         ViewGroup.LayoutParams layoutParams = menuContainer.getLayoutParams();
 
@@ -86,7 +87,7 @@ public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOl
 
         // 设置侧滑菜单
         for (int i = 0; i < size; i++) {
-            MenuItem menuItem = menuItems.get(i);
+            MenuItem menuItem = mMenuItems.get(i);
             String title = menuItem.getTitle();
             Drawable icon = menuItem.getIcon();
             int textColor = menuItem.getTextColor();
@@ -100,7 +101,6 @@ public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOl
             int iconPadding = menuItem.getIconPadding();
 
             MenuView titleTv = new MenuView(mContext);
-            titleTv.setTag(i);
             titleTv.setText(title);
             titleTv.setGravity(Gravity.CENTER);
 
@@ -162,6 +162,24 @@ public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOl
             menuContainer.addView(titleTv);
         }
 
+        // 设置自定义菜单
+        int customMenuCount = setCustomMenuCount(viewType);
+        for (int i = 0; i < customMenuCount; i++) {
+            View customMenuView = createCustomMenuView(i);
+            // 制定测量规则,UNSPECIFIED获取最小宽度，AT_MOST以及EXACTLY无法获取宽高，因此只能使用minWidth控制menu的最小宽度，或者使用布局内部的子view来控制宽度
+            int measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+            // 调用measure方法以获取宽高
+            customMenuView.measure(measureSpec, measureSpec);
+            int measuredWidth = customMenuView.getMeasuredWidth();
+
+            // 高度为MATCH_PARENT,即使用ItemView的高度作为menu的高度
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(measuredWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+            customMenuView.setLayoutParams(params);
+            menuContainerWidth += measuredWidth;
+
+            menuContainer.addView(customMenuView);
+        }
+
         layoutParams.width = menuContainerWidth;
         menuContainer.setLayoutParams(layoutParams);
         return new SwipeHolder(itemView);
@@ -188,6 +206,26 @@ public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOl
         return mContentData.size();
     }
 
+    /**
+     * 设置自定义菜单view
+     *
+     * @param menuPosition 菜单的position
+     * @return 菜单视图
+     */
+    public View createCustomMenuView(int menuPosition) {
+        return null;
+    }
+
+    /**
+     * 设置自定义menu的数量
+     *
+     * @param viewType 同onCreateViewHolder的viewType
+     * @return 自定义menu的数量
+     */
+    public int setCustomMenuCount(int viewType) {
+        return 0;
+    }
+
     public void setOnMenuItemClickListener(OnMenuItemClickListener mMenuItemClickListener) {
         this.mMenuItemClickListener = mMenuItemClickListener;
     }
@@ -205,12 +243,13 @@ public abstract class BaseOldSwipeAdapter<T> extends RecyclerView.Adapter<BaseOl
             LinearLayout menuContainer = itemView.findViewById(R.id.ll_menu_layout);
             for (int i = 0; i < menuContainer.getChildCount(); i++) {
                 View menuView = menuContainer.getChildAt(i);
+                final int menuPosition = i;
                 menuView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         // 菜单点击事件
                         if (mMenuItemClickListener != null) {
-                            mMenuItemClickListener.onClick(view, getLayoutPosition(), (Integer) view.getTag());
+                            mMenuItemClickListener.onClick(view, getLayoutPosition(), menuPosition);
                         }
                     }
                 });

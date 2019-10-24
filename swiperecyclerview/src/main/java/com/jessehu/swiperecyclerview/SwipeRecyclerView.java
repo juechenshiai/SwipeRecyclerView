@@ -143,7 +143,7 @@ public class SwipeRecyclerView extends RecyclerView {
                         view.scrollTo(0, 0);
                         if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
                             View itemView = getItemView(view);
-                            List<MenuView> menuViews = getMenuViews(view);
+                            List<View> menuViews = getMenuViews(view);
                             mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
                             mCurrentStatus = STATUS_CLOSE_FINISH;
                         }
@@ -166,7 +166,7 @@ public class SwipeRecyclerView extends RecyclerView {
                 if (slide) {
                     if (mMenuStatusListener != null) {
                         View itemView = getItemView(mFlingView);
-                        List<MenuView> menuViews = getMenuViews(mFlingView);
+                        List<View> menuViews = getMenuViews(mFlingView);
                         if ((xVelocity < 0 || x - mFirstX < 0) && mCurrentStatus != STATUS_OPEN_START) {
                             mMenuStatusListener.onOpenStart(itemView, menuViews, mPosition);
                             mCurrentStatus = STATUS_OPEN_START;
@@ -210,7 +210,7 @@ public class SwipeRecyclerView extends RecyclerView {
                             dx = -scrollX;
                             if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
                                 View itemView = getItemView(mFlingView);
-                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                List<View> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
                                 mCurrentStatus = STATUS_CLOSE_FINISH;
                             }
@@ -221,7 +221,7 @@ public class SwipeRecyclerView extends RecyclerView {
                             dx = mMenuWidth - scrollX;
                             if (mMenuStatusListener != null && mCurrentStatus != STATUS_OPEN_FINISH) {
                                 View itemView = getItemView(mFlingView);
-                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                List<View> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onOpenFinish(itemView, menuViews, mPosition);
                                 mCurrentStatus = STATUS_OPEN_FINISH;
                             }
@@ -229,7 +229,7 @@ public class SwipeRecyclerView extends RecyclerView {
 
                         if (mMenuStatusListener != null) {
                             View itemView = getItemView(mFlingView);
-                            List<MenuView> menuViews = getMenuViews(mFlingView);
+                            List<View> menuViews = getMenuViews(mFlingView);
                             if (dx > 0 && mCurrentStatus != STATUS_OPEN_START) {
                                 mMenuStatusListener.onOpenStart(itemView, menuViews, mPosition);
                                 mCurrentStatus = STATUS_OPEN_START;
@@ -257,7 +257,7 @@ public class SwipeRecyclerView extends RecyclerView {
                                     Math.abs(mMenuWidth - scrollX));
                             if (mMenuStatusListener != null && mCurrentStatus != STATUS_OPEN_FINISH) {
                                 View itemView = getItemView(mFlingView);
-                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                List<View> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onOpenFinish(itemView, menuViews, mPosition);
                                 mCurrentStatus = STATUS_OPEN_FINISH;
                             }
@@ -266,7 +266,7 @@ public class SwipeRecyclerView extends RecyclerView {
                             mScroller.startScroll(scrollX, 0, -scrollX, 0, Math.abs(mMenuWidth - scrollX));
                             if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
                                 View itemView = getItemView(mFlingView);
-                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                List<View> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
                                 mCurrentStatus = STATUS_CLOSE_FINISH;
                             }
@@ -276,7 +276,7 @@ public class SwipeRecyclerView extends RecyclerView {
                                     Math.abs(mMenuWidth - scrollX));
                             if (mMenuStatusListener != null && mCurrentStatus != STATUS_OPEN_FINISH) {
                                 View itemView = getItemView(mFlingView);
-                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                List<View> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onOpenFinish(itemView, menuViews, mPosition);
                                 mCurrentStatus = STATUS_OPEN_FINISH;
                             }
@@ -285,7 +285,7 @@ public class SwipeRecyclerView extends RecyclerView {
                             mScroller.startScroll(scrollX, 0, -scrollX, 0, Math.abs(mMenuWidth - scrollX));
                             if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
                                 View itemView = getItemView(mFlingView);
-                                List<MenuView> menuViews = getMenuViews(mFlingView);
+                                List<View> menuViews = getMenuViews(mFlingView);
                                 mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
                                 mCurrentStatus = STATUS_CLOSE_FINISH;
                             }
@@ -400,7 +400,7 @@ public class SwipeRecyclerView extends RecyclerView {
             mFlingView.scrollTo(0, 0);
             if (mMenuStatusListener != null && mCurrentStatus != STATUS_CLOSE_FINISH) {
                 View itemView = getItemView(mFlingView);
-                List<MenuView> menuViews = getMenuViews(mFlingView);
+                List<View> menuViews = getMenuViews(mFlingView);
                 mMenuStatusListener.onCloseFinish(itemView, menuViews, mPosition);
                 mCurrentStatus = STATUS_CLOSE_FINISH;
             }
@@ -412,11 +412,11 @@ public class SwipeRecyclerView extends RecyclerView {
      *
      * @return
      */
-    private List<MenuView> getMenuViews(View rootView) {
+    private List<View> getMenuViews(View rootView) {
         int childCount = ((ViewGroup) rootView.findViewById(R.id.ll_menu_layout)).getChildCount();
-        List<MenuView> menuViews = new ArrayList<>();
+        List<View> menuViews = new ArrayList<>();
         for (int i = 0; i < childCount; i++) {
-            menuViews.add((MenuView) ((ViewGroup) rootView.findViewById(R.id.ll_menu_layout)).getChildAt(i));
+            menuViews.add(((ViewGroup) rootView.findViewById(R.id.ll_menu_layout)).getChildAt(i));
         }
         return menuViews;
     }
@@ -445,7 +445,7 @@ public class SwipeRecyclerView extends RecyclerView {
          * @param menuViewList 菜单View
          * @param position     item对应的position
          */
-        void onOpenStart(View itemView, List<MenuView> menuViewList, int position);
+        void onOpenStart(View itemView, List<View> menuViewList, int position);
 
         /**
          * 菜单打开结束
@@ -454,7 +454,7 @@ public class SwipeRecyclerView extends RecyclerView {
          * @param menuViewList 菜单View
          * @param position     item对应的position
          */
-        void onOpenFinish(View itemView, List<MenuView> menuViewList, int position);
+        void onOpenFinish(View itemView, List<View> menuViewList, int position);
 
         /**
          * 菜单关闭起始状态
@@ -463,7 +463,7 @@ public class SwipeRecyclerView extends RecyclerView {
          * @param menuViewList 菜单View
          * @param position     item对应的position
          */
-        void onCloseStart(View itemView, List<MenuView> menuViewList, int position);
+        void onCloseStart(View itemView, List<View> menuViewList, int position);
 
         /**
          * 菜单关闭结束
@@ -472,7 +472,7 @@ public class SwipeRecyclerView extends RecyclerView {
          * @param menuViewList 菜单View
          * @param position     item对应的position
          */
-        void onCloseFinish(View itemView, List<MenuView> menuViewList, int position);
+        void onCloseFinish(View itemView, List<View> menuViewList, int position);
     }
 
 }

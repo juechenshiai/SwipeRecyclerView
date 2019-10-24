@@ -32,7 +32,7 @@ public abstract class BaseSwipeAdapter<VH extends BaseSwipeAdapter.BaseViewHolde
     protected LayoutInflater mInflater;
     private List<MenuItem> menuItems;
     private int mMenuWidth;
-    private Context mContext;
+    protected Context mContext;
     private OnMenuItemClickListener mMenuItemClickListener;
     private OnItemClickListener mItemClickListener;
 
@@ -43,7 +43,7 @@ public abstract class BaseSwipeAdapter<VH extends BaseSwipeAdapter.BaseViewHolde
     }
 
     /**
-     * 设置菜单标题
+     * 设置菜单属性
      *
      * @param menus 菜单
      */
@@ -52,7 +52,7 @@ public abstract class BaseSwipeAdapter<VH extends BaseSwipeAdapter.BaseViewHolde
     }
 
     /**
-     * 统一设置菜单宽度，如果菜单没有单独设置宽度则使用该宽度
+     * 统一设置菜单宽度，如果菜单没有单独设置宽度则使用该宽度，不支持自定义menu
      *
      * @param width 菜单宽度
      */
@@ -67,12 +67,11 @@ public abstract class BaseSwipeAdapter<VH extends BaseSwipeAdapter.BaseViewHolde
         FrameLayout contentContainer = itemView.findViewById(R.id.fl_content_layout);
         LinearLayout menuContainer = itemView.findViewById(R.id.ll_menu_layout);
 
-        int size = menuItems.size();
         // 设置菜单容器的宽度，否则为0
         ViewGroup.LayoutParams layoutParams = menuContainer.getLayoutParams();
-
         int menuContainerWidth = 0;
 
+        int size = menuItems.size();
         // 设置侧滑菜单
         for (int i = 0; i < size; i++) {
             MenuItem menuItem = menuItems.get(i);
@@ -89,7 +88,6 @@ public abstract class BaseSwipeAdapter<VH extends BaseSwipeAdapter.BaseViewHolde
             int iconPadding = menuItem.getIconPadding();
 
             MenuView titleTv = new MenuView(mContext);
-            titleTv.setTag(i);
             titleTv.setText(title);
             titleTv.setGravity(Gravity.CENTER);
 
@@ -144,11 +142,30 @@ public abstract class BaseSwipeAdapter<VH extends BaseSwipeAdapter.BaseViewHolde
             }
             titleTv.setWidth(width);
 
+            // 高度为MATCH_PARENT,即使用ItemView的高度作为menu的高度
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT);
             titleTv.setLayoutParams(params);
             menuContainerWidth += width;
 
             menuContainer.addView(titleTv);
+        }
+
+        // 设置自定义菜单
+        int customMenuCount = setCustomMenuCount(viewType);
+        for (int i = 0; i < customMenuCount; i++) {
+            View customMenuView = createCustomMenuView(i);
+            // 制定测量规则,UNSPECIFIED获取最小宽度，AT_MOST以及EXACTLY无法获取宽高，因此只能使用minWidth控制menu的最小宽度，或者使用布局内部的子view来控制宽度
+            int measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+            // 调用measure方法以获取宽高
+            customMenuView.measure(measureSpec, measureSpec);
+            int measuredWidth = customMenuView.getMeasuredWidth();
+
+            // 高度为MATCH_PARENT,即使用ItemView的高度作为menu的高度
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(measuredWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+            customMenuView.setLayoutParams(params);
+            menuContainerWidth += measuredWidth;
+
+            menuContainer.addView(customMenuView);
         }
 
         layoutParams.width = menuContainerWidth;
@@ -183,6 +200,26 @@ public abstract class BaseSwipeAdapter<VH extends BaseSwipeAdapter.BaseViewHolde
      */
     public abstract void onBindContentViewHolder(VH holder, int position);
 
+    /**
+     * 设置自定义菜单view，非必须
+     *
+     * @param menuPosition 菜单的position，具体的数量由 {@link #setCustomMenuCount(int)} 决定
+     * @return 菜单视图
+     */
+    public View createCustomMenuView(int menuPosition) {
+        return null;
+    }
+
+    /**
+     * 设置自定义menu的数量，非必须，如果需要设置自定义菜单必须添加
+     *
+     * @param viewType 同onCreateViewHolder的viewType
+     * @return 自定义menu的数量
+     */
+    public int setCustomMenuCount(int viewType) {
+        return 0;
+    }
+
     public void setOnMenuItemClickListener(OnMenuItemClickListener mMenuItemClickListener) {
         this.mMenuItemClickListener = mMenuItemClickListener;
     }
@@ -207,12 +244,13 @@ public abstract class BaseSwipeAdapter<VH extends BaseSwipeAdapter.BaseViewHolde
             LinearLayout menuContainer = itemView.findViewById(R.id.ll_menu_layout);
             for (int i = 0; i < menuContainer.getChildCount(); i++) {
                 View menuView = menuContainer.getChildAt(i);
+                final int menuPosition = i;
                 menuView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         // 菜单item点击事件
                         if (mMenuItemClickListener != null) {
-                            mMenuItemClickListener.onClick(view, getLayoutPosition(), (Integer) view.getTag());
+                            mMenuItemClickListener.onClick(view, getLayoutPosition(), menuPosition);
                         }
                     }
                 });
