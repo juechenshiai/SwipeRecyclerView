@@ -1,6 +1,8 @@
 SwipeRecyclerView
 ---
 
+[![](https://api.bintray.com/packages/juechenshiai/maven/SwipeRecyclerView/images/download.svg)](https://bintray.com/juechenshiai/maven/SwipeRecyclerView)
+
 侧滑菜单很多，对于重复造轮子的问题，主要是没有找到合适的，顺便练练手
 
 [旧版文档 BaseOldSwipeAdapter](./README_OLD.md)
