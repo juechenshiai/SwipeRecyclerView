@@ -167,23 +167,23 @@ swipeAdapter.setOnItemClickListener(new OnItemClickListener() {
 // 设置菜单滑动状态监听
 listView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
     @Override
-    public void onOpenStart(View itemView, List<MenuView> menuViewList, int position) {
+    public void onOpenStart(View itemView, List<View> menuViewList, int position) {
         Log.i(TAG, "onOpenStart: " + contents.get(position));
         itemView.setBackground(getResources().getDrawable(R.drawable.bg_open));
     }
 
     @Override
-    public void onOpenFinish(View itemView, List<MenuView> menuViewList, int position) {
+    public void onOpenFinish(View itemView, List<View> menuViewList, int position) {
         Log.i(TAG, "onOpenFinish: " + contents.get(position));
     }
 
     @Override
-    public void onCloseStart(View itemView, List<MenuView> menuViewList, int position) {
+    public void onCloseStart(View itemView, List<View> menuViewList, int position) {
         Log.i(TAG, "onCloseStart: " + contents.get(position));
     }
 
     @Override
-    public void onCloseFinish(View itemView, List<MenuView> menuViewList, int position) {
+    public void onCloseFinish(View itemView, List<View> menuViewList, int position) {
         Log.i(TAG, "onCloseFinish: " + contents.get(position));
         itemView.setBackground(getResources().getDrawable(R.drawable.bg_normal));
     }
