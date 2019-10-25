@@ -16,13 +16,13 @@ SwipeRecyclerView
     * item点击事件
     * 侧滑状态(包括展开关闭起始状态，展开关闭结束状态)
 
-### 1. 添加library
+### 添加library
 Gradle
 ```
 // SwipeRecyclerView基于recyclerview，因此必须添加recyclerview，版本随意
 implementation 'androidx.recyclerview:recyclerview:1.0.0'
 // 1.0.0以上版本才有新的Adapter，0.0.4以及以下版本只有旧版Adapter
-implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.1.0'
+implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.2.0'
 ```
 
 ### 使用
@@ -46,6 +46,11 @@ implementation 'com.jessehu.swiperecyclerview:SwipeRecyclerView:0.1.0'
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 #### 2. 创建菜单
+创建菜单有两种方式：
+  1. 使用默认菜单，只需要配置菜单属性即可
+  2. 使用自定义菜单，可以自定义菜单，但是高度只能为ItemView的高度，需要在adapter中创建
+
+##### 2.1 创建默认菜单属性
 ```java
 MenuItem menuItem = new MenuItem();
 // 设置菜单宽度
@@ -121,6 +126,39 @@ public class SwipeAdapter extends BaseSwipeAdapter<SwipeAdapter.ContentViewHolde
 `onBindContentViewHolder()` 对应 `onBindViewHolder()`  
 `BaseSwipeAdapter.BaseViewHolder` 对应 `RecyclerView.ViewHolder`
 
+##### 3.1 创建自定义菜单
+在adapter中重写setCustomMenuCount(int)和createCustomMenuView(int)
+```java
+@Override
+public View createCustomMenuView(int menuPosition) {
+    // 创建对应位置的菜单
+    switch (menuPosition) {
+       case 0:
+            TextView textView = new TextView(mContext);
+            textView.setText("123654");
+            textView.setGravity(Gravity.CENTER);
+            textView.setWidth(150);
+            textView.setTextColor(Color.RED);
+            textView.setBackgroundColor(Color.BLUE);
+            return textView;
+        case 1:
+            return mInflater.inflate(R.layout.item_menu_view, null);
+        default:
+            return super.createCustomMenuView(menuPosition);
+    }
+}
+
+@Override
+public int setCustomMenuCount(int viewType) {
+    // 菜单数量
+    return 2;
+}
+```
+> 注意：
+> 1. 菜单宽度通过设置自定义View的RootView的最小宽度(setMinWidth)，如果RootView支持setWidth也可以设置
+> 2. 宽度也可以通过ViewGroup中的子View的宽度来撑开ViewGroup作为菜单宽度
+> 3. 如果菜单的RootView不支持setWidth，在XML布局中设置layout_width无效，但是可以通过设置layout_minWidth
+
 #### 4. 设置Adapter
 ```java
 SwipeAdapter swipeAdapter = new SwipeAdapter(mContext, contents);
@@ -138,7 +176,11 @@ listView.setAdapter(swipeAdapter);
 swipeAdapter.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     @Override
     public void onClick(View view, int itemPosition, int menuPosition) {
-        Toast.makeText(mContext, titles.get(menuPosition) + contents.get(itemPosition), Toast.LENGTH_SHORT).show();
+        if (view instanceof MenuView) {
+            Toast.makeText(mContext, mTitles.get(menuPosition) + mContents.get(itemPosition), Toast.LENGTH_SHORT).show();
+        } else {
+                Toast.makeText(mContext, "菜单" + (menuPosition + 1) + mContents.get(itemPosition), Toast.LENGTH_SHORT).show();
+        }
     }
 });
 
@@ -154,23 +196,23 @@ swipeAdapter.setOnItemClickListener(new OnItemClickListener() {
 // 设置菜单滑动状态监听
 listView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
     @Override
-    public void onOpenStart(View itemView, List<MenuView> menuViewList, int position) {
+    public void onOpenStart(View itemView, List<View> menuViewList, int position) {
         Log.i(TAG, "onOpenStart: " + contents.get(position));
         itemView.setBackground(getResources().getDrawable(R.drawable.bg_open));
     }
 
     @Override
-    public void onOpenFinish(View itemView, List<MenuView> menuViewList, int position) {
+    public void onOpenFinish(View itemView, List<View> menuViewList, int position) {
         Log.i(TAG, "onOpenFinish: " + contents.get(position));
     }
 
     @Override
-    public void onCloseStart(View itemView, List<MenuView> menuViewList, int position) {
+    public void onCloseStart(View itemView, List<View> menuViewList, int position) {
         Log.i(TAG, "onCloseStart: " + contents.get(position));
     }
 
     @Override
-    public void onCloseFinish(View itemView, List<MenuView> menuViewList, int position) {
+    public void onCloseFinish(View itemView, List<View> menuViewList, int position) {
         Log.i(TAG, "onCloseFinish: " + contents.get(position));
         itemView.setBackground(getResources().getDrawable(R.drawable.bg_normal));
     }
@@ -178,6 +220,8 @@ listView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
 ```
 注意：点击事件是Adapter回调的而侧滑状态是SwipeRecyclerView回调的  
 在进行其他操作之前，请先关闭已打开的菜单`listView.closeMenu()`
+
+更多请查看demo
 
 最后送上丑图一张  
 ![丑图](screenshot/1.gif)
