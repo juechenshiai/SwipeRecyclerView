@@ -25,5 +25,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, DemoOldActivity.class);
             startActivity(intent);
         });
+        findViewById(R.id.btn_new_custom).setOnClickListener(v -> {
+            Intent intent = new Intent(this, CustomMenuDemoActivity.class);
+            startActivity(intent);
+        });
+        findViewById(R.id.btn_old_custom).setOnClickListener(v -> {
+            Intent intent = new Intent(this, CustomMenuDemoOldActivity.class);
+            startActivity(intent);
+        });
     }
 }

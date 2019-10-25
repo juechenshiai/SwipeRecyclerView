@@ -127,8 +127,15 @@ public class DemoActivity extends AppCompatActivity {
      */
     private void setListener() {
         // menu item click listener
-        mSwipeAdapter.setOnMenuItemClickListener((view, itemPosition, menuPosition) -> Toast.makeText(mContext,
-                mTitles.get(menuPosition) + mContents.get(itemPosition), Toast.LENGTH_SHORT).show());
+        mSwipeAdapter.setOnMenuItemClickListener((view, itemPosition, menuPosition) -> {
+            if (view instanceof MenuView) {
+                Toast.makeText(mContext,
+                        mTitles.get(menuPosition) + mContents.get(itemPosition), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(mContext,
+                        "菜单" + (menuPosition + 1) + mContents.get(itemPosition), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // list item click listener
         mSwipeAdapter.setOnItemClickListener((view, position) -> {
@@ -139,25 +146,25 @@ public class DemoActivity extends AppCompatActivity {
         // item scroll status listener
         mListView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
             @Override
-            public void onOpenStart(View itemView, List<MenuView> menuViewList, int position) {
+            public void onOpenStart(View itemView, List<View> menuViewList, int position) {
                 Log.i(TAG, "onOpenStart: " + mContents.get(position));
                 itemView.setBackground(getResources().getDrawable(R.drawable.bg_open));
             }
 
             @Override
-            public void onOpenFinish(View itemView, List<MenuView> menuViewList, int position) {
+            public void onOpenFinish(View itemView, List<View> menuViewList, int position) {
                 Log.i(TAG, "onOpenFinish: " + mContents.get(position));
                 itemView.setBackground(getResources().getDrawable(R.drawable.bg_opened));
             }
 
             @Override
-            public void onCloseStart(View itemView, List<MenuView> menuViewList, int position) {
+            public void onCloseStart(View itemView, List<View> menuViewList, int position) {
                 Log.i(TAG, "onCloseStart: " + mContents.get(position));
                 itemView.setBackground(getResources().getDrawable(R.drawable.bg_open));
             }
 
             @Override
-            public void onCloseFinish(View itemView, List<MenuView> menuViewList, int position) {
+            public void onCloseFinish(View itemView, List<View> menuViewList, int position) {
                 Log.i(TAG, "onCloseFinish: " + mContents.get(position));
                 itemView.setBackground(getResources().getDrawable(R.drawable.bg_normal));
             }

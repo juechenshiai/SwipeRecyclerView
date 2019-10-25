@@ -23,12 +23,12 @@ import java.util.List;
  * @author JesseHu
  * @date 2019/9/20
  */
-public class DemoOldActivity extends AppCompatActivity {
+public class CustomMenuDemoOldActivity extends AppCompatActivity {
     private Context mContext;
-    private static final String TAG = DemoOldActivity.class.getSimpleName();
+    private static final String TAG = CustomMenuDemoOldActivity.class.getSimpleName();
     private List<String> mContents;
     private List<String> mTitles;
-    private OldSwipeAdapter mSwipeAdapter;
+    private CustomMenuOldSwipeAdapter mSwipeAdapter;
     private SwipeRecyclerView mListView;
 
     @Override
@@ -40,7 +40,7 @@ public class DemoOldActivity extends AppCompatActivity {
         initData();
 
         List<MenuItem> menus = createMenuItems(mTitles);
-        mSwipeAdapter = new OldSwipeAdapter(mContext, R.layout.item_view, mContents);
+        mSwipeAdapter = new CustomMenuOldSwipeAdapter(mContext, R.layout.item_view, mContents);
         mSwipeAdapter.setMenus(menus);
         // 统一设置menu item的宽度，只针对没有设置宽度的menu item
         // mSwipeAdapter.setMenuWidth(200);
@@ -61,7 +61,7 @@ public class DemoOldActivity extends AppCompatActivity {
         }
 
         mTitles = new ArrayList<>();
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < 3; i++) {
             mTitles.add("菜单" + i);
         }
     }
@@ -78,23 +78,6 @@ public class DemoOldActivity extends AppCompatActivity {
             menuItem.setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
 
             switch (i) {
-                case 3:
-                    menuItem.setBgDrawable(getResources().getDrawable(R.drawable.bg_menu));
-                    menuItem.setTextColor(Color.YELLOW);
-                    menuItem.setPadding(20);
-                    menuItem.setIconPadding(15);
-                    menuItem.setTextSize(8);
-                    menuItem.setIconGravity(Gravity.BOTTOM);
-                    menuItem.setIconSize(80);
-                    break;
-                case 2:
-                    menuItem.setBgColor(Color.BLUE);
-                    menuItem.setTextColor(Color.RED);
-                    menuItem.setIconPadding(10);
-                    menuItem.setWidth(120);
-                    menuItem.setTextSize(10);
-                    menuItem.setIconGravity(Gravity.END);
-                    break;
                 case 1:
                     menuItem.setBgColor(Color.RED);
                     menuItem.setTextColor(Color.BLUE);

@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jessehu.swiperecyclerview.SwipeRecyclerView;
@@ -18,37 +19,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * BaseOldSwipeAdapter demo
+ * BaseSwipeAdapter demo
  *
  * @author JesseHu
- * @date 2019/9/20
+ * @date 2019/10/15
  */
-public class DemoOldActivity extends AppCompatActivity {
+public class CustomMenuDemoActivity extends AppCompatActivity {
     private Context mContext;
-    private static final String TAG = DemoOldActivity.class.getSimpleName();
+    private static final String TAG = CustomMenuDemoActivity.class.getSimpleName();
+    private CustomMenuSwipeAdapter mSwipeAdapter;
+    private SwipeRecyclerView mListView;
     private List<String> mContents;
     private List<String> mTitles;
-    private OldSwipeAdapter mSwipeAdapter;
-    private SwipeRecyclerView mListView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
+
         mContext = this;
 
         initData();
 
         List<MenuItem> menus = createMenuItems(mTitles);
-        mSwipeAdapter = new OldSwipeAdapter(mContext, R.layout.item_view, mContents);
+
+        mSwipeAdapter = new CustomMenuSwipeAdapter(mContext, mContents);
         mSwipeAdapter.setMenus(menus);
         // 统一设置menu item的宽度，只针对没有设置宽度的menu item
-        // mSwipeAdapter.setMenuWidth(200);
+        //        mSwipeAdapter.setMenuWidth(200);
 
         mListView = findViewById(R.id.srv_list);
         mListView.setAdapter(mSwipeAdapter);
 
         setListener();
+
     }
 
     /**
@@ -61,7 +65,7 @@ public class DemoOldActivity extends AppCompatActivity {
         }
 
         mTitles = new ArrayList<>();
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < 3; i++) {
             mTitles.add("菜单" + i);
         }
     }
@@ -78,23 +82,6 @@ public class DemoOldActivity extends AppCompatActivity {
             menuItem.setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
 
             switch (i) {
-                case 3:
-                    menuItem.setBgDrawable(getResources().getDrawable(R.drawable.bg_menu));
-                    menuItem.setTextColor(Color.YELLOW);
-                    menuItem.setPadding(20);
-                    menuItem.setIconPadding(15);
-                    menuItem.setTextSize(8);
-                    menuItem.setIconGravity(Gravity.BOTTOM);
-                    menuItem.setIconSize(80);
-                    break;
-                case 2:
-                    menuItem.setBgColor(Color.BLUE);
-                    menuItem.setTextColor(Color.RED);
-                    menuItem.setIconPadding(10);
-                    menuItem.setWidth(120);
-                    menuItem.setTextSize(10);
-                    menuItem.setIconGravity(Gravity.END);
-                    break;
                 case 1:
                     menuItem.setBgColor(Color.RED);
                     menuItem.setTextColor(Color.BLUE);
@@ -122,6 +109,7 @@ public class DemoOldActivity extends AppCompatActivity {
      * 设置事件监听
      */
     private void setListener() {
+        // menu item click listener
         mSwipeAdapter.setOnMenuItemClickListener((view, itemPosition, menuPosition) -> {
             if (view instanceof MenuView) {
                 Toast.makeText(mContext,
@@ -131,6 +119,14 @@ public class DemoOldActivity extends AppCompatActivity {
                         "菜单" + (menuPosition + 1) + mContents.get(itemPosition), Toast.LENGTH_SHORT).show();
             }
         });
+
+        // list item click listener
+        mSwipeAdapter.setOnItemClickListener((view, position) -> {
+            mListView.closeMenu();
+            Toast.makeText(mContext, mContents.get(position), Toast.LENGTH_SHORT).show();
+        });
+
+        // item scroll status listener
         mListView.setOnMenuStatusListener(new SwipeRecyclerView.OnMenuStatusListener() {
             @Override
             public void onOpenStart(View itemView, List<View> menuViewList, int position) {
@@ -155,10 +151,6 @@ public class DemoOldActivity extends AppCompatActivity {
                 Log.i(TAG, "onCloseFinish: " + mContents.get(position));
                 itemView.setBackground(getResources().getDrawable(R.drawable.bg_normal));
             }
-        });
-        mSwipeAdapter.setOnItemClickListener((view, position) -> {
-            mListView.closeMenu();
-            Toast.makeText(mContext, mContents.get(position), Toast.LENGTH_SHORT).show();
         });
     }
 }
